@@ -108,3 +108,16 @@ class WorkerSkills(APIView):
 
     def get(self, request, worker_id):
         return self.worker_service.get_skills(worker_id)
+
+
+class SearchWorker(APIView):
+    def __init__(self):
+        self.worker_service = WorkerService()
+
+    def get(self, request):
+        query_params = request.query_params
+
+        param_name, value = list(query_params.items())[0]
+        result = self.worker_service.search_by(param_name, value)
+
+        return Response(result, status=status.HTTP_200_OK)
