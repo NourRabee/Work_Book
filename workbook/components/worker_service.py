@@ -1,6 +1,8 @@
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from django.db.models import Value
+from django.db.models.functions import Concat
 
 from workbook.serializers.worker_serializer import *
 
@@ -74,4 +76,29 @@ class WorkerService:
             workers = Worker.objects.filter(workerskill__skill_id=value)
 
         serializer = WorkerUserSerializer(workers, many=True)
+
+        return serializer.data
+
+    def order_by(self, order_by=None, order_type=None):
+
+        # The annotate method is used to add extra fields to each object in the queryset based on calculations or
+        # aggregations.
+        workers = Worker.objects.annotate(
+            full_name=Concat('user__first_name', Value(' '), 'user__last_name')
+        )
+        if order_by == "reviews":
+            workers = workers.annotate(
+                review_count=Count('workerskill__reservation__review')
+            ).order_by('-review_count' if order_type == "desc" else 'review_count')
+
+        elif order_by == "reservations":
+            workers = workers.annotate(
+                reservation_count=Count('workerskill__reservation')
+            ).order_by('-reservation_count' if order_type == "desc" else 'reservation_count')
+
+        else:
+            workers = workers.order_by('-full_name' if order_type == "desc" else 'full_name')
+
+        serializer = WorkerUserSerializer(workers, many=True)
+
         return serializer.data

@@ -110,7 +110,7 @@ class WorkerSkills(APIView):
         return self.worker_service.get_skills(worker_id)
 
 
-class SearchWorker(APIView):
+class SearchWorkers(APIView):
     def __init__(self):
         self.worker_service = WorkerService()
 
@@ -118,6 +118,32 @@ class SearchWorker(APIView):
         query_params = request.query_params
 
         param_name, value = list(query_params.items())[0]
+        param_name = param_name.lower()
         result = self.worker_service.search_by(param_name, value)
 
         return Response(result, status=status.HTTP_200_OK)
+
+
+class OrderWorkers(APIView):
+
+    def __init__(self):
+        self.worker_service = WorkerService()
+
+    def get(self, request):
+
+        if 'order_by' in request.query_params or 'order_type' in request.query_params:
+
+            order_type = request.GET.get('order_type')
+            order_by = request.GET.get('order_by')
+
+            order_type = order_type.lower() if order_type else None
+            order_by = order_by.lower() if order_by else None
+
+            result = self.worker_service.order_by(order_by, order_type)
+
+        else:
+            result = self.worker_service.order_by()
+
+        return Response(result, status=status.HTTP_200_OK)
+
+

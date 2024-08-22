@@ -11,7 +11,8 @@ urlpatterns = \
 
         path('workers/<int:worker_id>', Worker.as_view()),
 
-        path('workers/', SearchWorker.as_view()),
+        path('workers/search', SearchWorkers.as_view()),
+        path('workers/', OrderWorkers.as_view()),
 
         path('customers/<int:customer_id>', Customer.as_view()),
 
