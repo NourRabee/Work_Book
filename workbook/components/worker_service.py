@@ -1,4 +1,4 @@
-from django.db.models import Q, Count
+from django.db.models import Q, Count, ExpressionWrapper, F, IntegerField, Func
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.db.models import Value
@@ -47,21 +47,29 @@ class WorkerService:
 
         return "Worker deleted successfully."
 
-    def search_by(self, param_name, value):
+    def search(self, params):
 
-        if param_name == "first_name":
+        search_result = self.search_by(params.search_by, params.search_value)
+        order_result = self.order_by(search_result, params.order_by, params.order_type)
+        filter_result = self.filter_by(order_result, params.filter_by, params.filter_value)
+        paginated_result = filter_result[params.limit * params.offset:(params.limit + params.offset)]
+
+        serializer = WorkerUserSerializer(paginated_result, many=True)
+
+        return serializer.data
+
+    def search_by(self, search_by, search_value):
+
+        if search_by == "first_name":
             # icontains in Django is designed to be case-insensitive but does perform a wildcard-like search.
-            workers = Worker.objects.filter(user__first_name__icontains=value)
-        elif param_name == "last_name":
+            workers = Worker.objects.filter(user__first_name__icontains=search_value)
 
-            workers = Worker.objects.filter(user__last_name__icontains=value)
+        elif search_by == "last_name":
 
-        elif param_name == "job_title":
+            workers = Worker.objects.filter(user__last_name__icontains=search_value)
 
-            workers = Worker.objects.filter(job_title__icontains=value)
-
-        elif param_name == "full_name":
-            name_parts = value.split(' ', 1)
+        elif search_by == "full_name":
+            name_parts = search_value.split(' ', 1)
             if len(name_parts) == 2:
                 first_name, last_name = name_parts
                 workers = Worker.objects.filter(
@@ -71,21 +79,17 @@ class WorkerService:
             else:
                 return {"error": "Full name must be in 'First Last' format."}
 
-        elif param_name == "skill_id":
+        else:
+            workers = Worker.objects.filter(workerskill__skill_id=search_value)
 
-            workers = Worker.objects.filter(workerskill__skill_id=value)
+        return workers
 
-        serializer = WorkerUserSerializer(workers, many=True)
+    def order_by(self, workers, order_by, order_type):
 
-        return serializer.data
-
-    def order_by(self, order_by=None, order_type=None):
-
-        # The annotate method is used to add extra fields to each object in the queryset based on calculations or
-        # aggregations.
-        workers = Worker.objects.annotate(
+        workers = workers.annotate(
             full_name=Concat('user__first_name', Value(' '), 'user__last_name')
         )
+
         if order_by == "reviews":
             workers = workers.annotate(
                 review_count=Count('workerskill__reservation__review')
@@ -99,6 +103,49 @@ class WorkerService:
         else:
             workers = workers.order_by('-full_name' if order_type == "desc" else 'full_name')
 
-        serializer = WorkerUserSerializer(workers, many=True)
+        return workers
 
-        return serializer.data
+    # EXTRACT(HOUR FROM time_slot_period)
+    class ExtractHour(Func):
+        function = 'EXTRACT'
+        template = '%(function)s(HOUR FROM %(expressions)s)'
+
+    class ExtractMinute(Func):
+        function = 'EXTRACT'
+        template = '%(function)s(MINUTE FROM %(expressions)s)'
+
+    class ExtractSecond(Func):
+        function = 'EXTRACT'
+        template = '%(function)s(SECOND FROM %(expressions)s)'
+
+    def filter_by(self, workers, filter_by, filter_value):
+
+        if filter_by is None or filter_value is None:
+            return workers
+
+        filter_value_minutes = (
+                filter_value.hour * 60 +
+                filter_value.minute +
+                filter_value.second / 60
+        )
+
+        selected_workers = workers.annotate(
+            time_slot_minutes=ExpressionWrapper(
+                (self.ExtractHour(F('workerskill__time_slot_period')) * 60 +
+                 self.ExtractMinute(F('workerskill__time_slot_period')) +
+                 self.ExtractSecond(F('workerskill__time_slot_period')) / 60),
+                output_field=IntegerField()
+            )
+        ).annotate(
+            is_selected=ExpressionWrapper(
+                Value(filter_value_minutes) % F('time_slot_minutes'),
+                output_field=IntegerField()
+            )
+        ).filter(is_selected=0)
+
+        return selected_workers
+
+
+
+
+

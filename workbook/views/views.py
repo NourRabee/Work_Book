@@ -9,6 +9,7 @@ from workbook.components.customer_service import CustomerService
 from workbook.components.sign_in_service import SignInService
 from workbook.components.sign_up_service import SignUpService
 from workbook.components.worker_service import WorkerService
+from workbook.search_query_params import SearchQueryParameters
 from workbook.serializers.customer_serializer import CustomerSerializer
 from workbook.serializers.sign_up_serializer import SignUpSerializer
 from workbook.serializers.worker_serializer import WorkerSerializer
@@ -115,35 +116,10 @@ class SearchWorkers(APIView):
         self.worker_service = WorkerService()
 
     def get(self, request):
-        query_params = request.query_params
+        params = SearchQueryParameters(request.query_params)
+        params.validate_mandatory_params()
+        params.validate_params()
 
-        param_name, value = list(query_params.items())[0]
-        param_name = param_name.lower()
-        result = self.worker_service.search_by(param_name, value)
-
-        return Response(result, status=status.HTTP_200_OK)
-
-
-class OrderWorkers(APIView):
-
-    def __init__(self):
-        self.worker_service = WorkerService()
-
-    def get(self, request):
-
-        if 'order_by' in request.query_params or 'order_type' in request.query_params:
-
-            order_type = request.GET.get('order_type')
-            order_by = request.GET.get('order_by')
-
-            order_type = order_type.lower() if order_type else None
-            order_by = order_by.lower() if order_by else None
-
-            result = self.worker_service.order_by(order_by, order_type)
-
-        else:
-            result = self.worker_service.order_by()
+        result = self.worker_service.search(params)
 
         return Response(result, status=status.HTTP_200_OK)
-
-
