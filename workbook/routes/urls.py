@@ -5,7 +5,7 @@ from workbook.views.views import *
 
 urlpatterns = \
     [
-        path('signin/', SignInView.as_view()),
-        path('signup/', SignUpView.as_view()),
+        path('signin', SignInView.as_view()),
+        path('signup', SignUpView.as_view()),
 
     ] + debug_toolbar_urls()
