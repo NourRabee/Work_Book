@@ -36,6 +36,11 @@ class WorkerSkill(models.Model):
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     time_slot_period = models.TimeField()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['worker', 'skill'], name='unique_worker_skill')
+        ]
+
 
 class Reservation(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
