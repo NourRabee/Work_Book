@@ -16,7 +16,7 @@ class SessionService:
 
         return session if session and self.is_valid(session.token_start_time) else None
 
-    def update(self, session):
+    def refresh_token_time(self, session):
         session.token_start_time = datetime.now(timezone.utc)
         session.save()
 
@@ -24,5 +24,5 @@ class SessionService:
         return Session.objects.create(token=uuid.uuid1().hex, user_id=user_id)
 
     def is_valid_timeout(self, session_start_time):
-        return SESSION_VALID_TIME < session_helper.get_time_difference(
+        return SESSION_VALID_TIME <= session_helper.get_time_difference(
             session_start_time) < SESSION_TIMEOUT

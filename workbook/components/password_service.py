@@ -15,6 +15,4 @@ class PasswordService:
         return hashed_password
 
     def validate(self, plain_password, salt, hashed_password):
-        validated = self.hash_with_salt(plain_password, salt)
-
-        return hashed_password == validated
+        return hashed_password == self.hash_with_salt(plain_password, salt)

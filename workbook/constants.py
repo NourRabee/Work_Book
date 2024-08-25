@@ -1,10 +1,10 @@
 SALT_LENGTH = 12
 
-SESSION_TIMEOUT = 120
-# 1800  # 30 minutes have 1800 seconds
+# 30 minutes have 1800 seconds
+SESSION_TIMEOUT = 1800
 
-SESSION_VALID_TIME = 60
-# 900  # 15 minutes have 900 seconds
+# 15 minutes have 900 seconds
+SESSION_VALID_TIME = 900
 
 MINIMUM_NAME_LENGTH = 2
 

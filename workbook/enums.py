@@ -8,16 +8,16 @@ class BaseEnum(Enum):
 
 
 class ReservationStatus(BaseEnum):
-    IN_PROGRESS = "in progress"
-    REJECTED = "rejected"
-    COMPLETED = "completed"
+    IN_PROGRESS = "IN_PROGRESS"
+    REJECTED = "REJECTED"
+    COMPLETED = "COMPLETED"
 
 
 class MessageSender(BaseEnum):
-    CUSTOMER = "customer"
-    WORKER = "worker"
+    CUSTOMER = "CUSTOMER"
+    WORKER = "WORKER"
 
 
 class UserType(BaseEnum):
-    CUSTOMER = "customer"
-    WORKER = "worker"
+    CUSTOMER = "CUSTOMER"
+    WORKER = "WORKER"

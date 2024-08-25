@@ -27,7 +27,7 @@ class SignInService:
         is_valid_session = self.session_service.is_valid(session.token_start_time)
 
         if is_valid_session:
-            self.session_service.update(session)
+            self.session_service.refresh_token_time(session)
             return session.token
 
         else:
