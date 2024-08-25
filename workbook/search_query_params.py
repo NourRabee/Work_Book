@@ -29,12 +29,9 @@ class SearchQueryParameters:
         if self.order_by:
             self.order_by = self.order_by.lower()
 
-        if self.filter_by == 'slot_period':
-            try:
-                self.filter_value = datetime.strptime(self.filter_value, "%H:%M:%S").time()
-                self.filter_by = self.filter_by.lower()
-            except ValueError:
-                raise BadRequest('Invalid time format for filtering. Please use HH:MM:SS format.')
+        if self.filter_by:
+            self.filter_by = self.filter_by.lower()
+
         else:
             raise BadRequest('Filtering can only be done on slot_period.')
 

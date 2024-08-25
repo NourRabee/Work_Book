@@ -118,27 +118,14 @@ class WorkerService:
         function = 'EXTRACT'
         template = '%(function)s(SECOND FROM %(expressions)s)'
 
-    def filter_by(self, workers, filter_by, filter_value):
+    def filter_by(self, workers, filter_by, filter_value_minutes):
 
-        if filter_by is None or filter_value is None:
+        if filter_by is None or filter_value_minutes is None:
             return workers
 
-        filter_value_minutes = (
-                filter_value.hour * 60 +
-                filter_value.minute +
-                filter_value.second / 60
-        )
-
         selected_workers = workers.annotate(
-            time_slot_minutes=ExpressionWrapper(
-                (self.ExtractHour(F('workerskill__time_slot_period')) * 60 +
-                 self.ExtractMinute(F('workerskill__time_slot_period')) +
-                 self.ExtractSecond(F('workerskill__time_slot_period')) / 60),
-                output_field=IntegerField()
-            )
-        ).annotate(
             is_selected=ExpressionWrapper(
-                Value(filter_value_minutes) % F('time_slot_minutes'),
+                Value(filter_value_minutes) % F('workerskill__time_slot_period'),
                 output_field=IntegerField()
             )
         ).filter(is_selected=0)

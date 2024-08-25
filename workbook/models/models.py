@@ -34,14 +34,14 @@ class Skill(models.Model):
 class WorkerSkill(models.Model):
     worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
-    time_slot_period = models.TimeField()
+    time_slot_period = models.FloatField(help_text="Duration of the time slot in minutes")
 
 
 class Reservation(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     worker_skill = models.ForeignKey(WorkerSkill, on_delete=models.CASCADE)
     start_date_time = models.DateTimeField(null=True, blank=True)
-    time_slot_period = models.TimeField(null=True, blank=True)
+    time_slot_period = models.FloatField(null=True, blank=True, help_text="Duration of the time slot in minutes")
 
     status = models.CharField(choices=ReservationStatus.choices(), default=ReservationStatus.IN_PROGRESS, max_length=29)
 
