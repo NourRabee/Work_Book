@@ -26,8 +26,4 @@ class SignUpService:
         return SignUpResponseSerializer(user).data
 
     def email_existence_check(self, email):
-        user_email = User.objects.filter(email=email).first()
-
-        if user_email:
-            return "Email already used"
-        return None
+        return bool(User.objects.filter(email=email).first())

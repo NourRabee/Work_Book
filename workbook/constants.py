@@ -1,0 +1,17 @@
+SALT_LENGTH = 12
+
+SESSION_TIMEOUT = 120
+# 1800  # 30 minutes have 1800 seconds
+
+SESSION_VALID_TIME = 60
+# 900  # 15 minutes have 900 seconds
+
+MINIMUM_NAME_LENGTH = 2
+
+PASSWORD_MIN_LENGTH = 8
+
+PASSWORD_PATTERN = rf'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{{{PASSWORD_MIN_LENGTH},}}$'
+
+MINIMUM_EMAIL_DOMAIN_LENGTH = 2
+
+EMAIL_PATTERN = rf'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{{{MINIMUM_EMAIL_DOMAIN_LENGTH},}}$'

@@ -2,6 +2,7 @@ import json
 
 from django.core.exceptions import BadRequest
 from rest_framework import status
+from rest_framework.exceptions import NotAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -20,14 +21,21 @@ class SignInView(APIView):
         if not session_id:
             email = request.data.get('email')
             password = request.data.get('password')
-            result = self.sign_in_service.authenticate_user(email, password)
-        else:
-            result = self.sign_in_service.authenticate_session(session_id)
 
-        if result:
-            return Response({"token": result})
+            if not email or not password:
+                raise BadRequest('Both email and password are required')
+
+            token = self.sign_in_service.authenticate_user(email, password)
+
+            if token is None:
+                raise NotAuthenticated('Sign in failed. Email or password may be incorrect.')
+
         else:
-            return Response({"message": "Sign in again"}, status=401)  # Return a 401 status if authentication fails
+            token = self.sign_in_service.authenticate_session(session_id)
+            if token is None:
+                raise NotAuthenticated('Session expired or invalid. Please sign in again.')
+
+        return Response({"token": token})
 
 
 class SignUpView(APIView):
@@ -43,7 +51,6 @@ class SignUpView(APIView):
             raise BadRequest(email_validation_result)
 
         user_serializer = SignUpSerializer(data=data)
-
         user_serializer.is_valid_raise()
 
         created_user = self.sign_up_service.create(user_serializer)

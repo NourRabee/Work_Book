@@ -2,6 +2,8 @@ import re
 
 from django.core.exceptions import BadRequest
 from rest_framework import serializers
+
+from workbook.constants import *
 from workbook.models.models import *
 
 
@@ -16,18 +18,17 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     # Serializer Validation/ Field-level validation
     def validate_first_name(self, value):
-        if len(value) < 2:
-            raise serializers.ValidationError("Name must be at least 2 characters long.")
+        if len(value) < MINIMUM_NAME_LENGTH:
+            raise serializers.ValidationError(f"Name must be at least {MINIMUM_NAME_LENGTH} characters long.")
         return value
 
     def validate_last_name(self, value):
-        if len(value) < 2:
-            raise serializers.ValidationError("Name must be at least 2 characters long.")
+        if len(value) < MINIMUM_NAME_LENGTH:
+            raise serializers.ValidationError(f"Name must be at least {MINIMUM_NAME_LENGTH} characters long.")
         return value
 
     def validate_email(self, value):
-        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        is_valid = re.match(pattern, value)
+        is_valid = re.match(EMAIL_PATTERN, value)
 
         if not is_valid:
             raise serializers.ValidationError("Check your email.")
@@ -35,12 +36,12 @@ class SignUpSerializer(serializers.ModelSerializer):
         return value
 
     def validate_password(self, value):
-        pattern = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{9,}$'
-        is_valid = re.match(pattern, value)
+        is_valid = re.match(PASSWORD_PATTERN, value)
 
         if not is_valid:
             raise serializers.ValidationError(
-                "Password must be more than 8 characters long and contain both numeric and alphabetic characters."
+                f"Password must be more than {PASSWORD_MIN_LENGTH} characters long and contain both numeric and "
+                "alphabetic characters."
             )
 
         return value

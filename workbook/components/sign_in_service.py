@@ -15,7 +15,7 @@ class SignInService:
         authenticated = self.password_service.validate(password, user.salt, user.password)
 
         if authenticated:
-            session = self.session_service.get_or_create(user.id)
+            session = self.session_service.create(user.id)
             return session.token
 
         return None
@@ -27,11 +27,12 @@ class SignInService:
         is_valid_session = self.session_service.is_valid(session.token_start_time)
 
         if is_valid_session:
+            self.session_service.update(session)
             return session.token
 
         else:
             is_valid_timeout = self.session_service.is_valid_timeout(session.token_start_time)
             if is_valid_timeout:
-                session = self.session_service.get_or_create(session.user_id)
+                session = self.session_service.create(session.user_id)
                 return session.token
         return None
