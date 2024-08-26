@@ -18,8 +18,8 @@ class User(models.Model):
 class Worker(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     job_title = models.CharField(max_length=50, null=True, blank=True)
-    day_start_time = models.TimeField(null=True, blank=True)
-    day_end_time = models.TimeField(null=True, blank=True)
+    day_start_time = models.IntegerField(help_text="Duration of the time slot in seconds", null=True, blank=True)
+    day_end_time = models.IntegerField(help_text="Duration of the time slot in seconds", null=True, blank=True)
 
 
 class Customer(models.Model):
@@ -34,14 +34,14 @@ class Skill(models.Model):
 class WorkerSkill(models.Model):
     worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
-    time_slot_period = models.FloatField(help_text="Duration of the time slot in minutes")
+    time_slot_period = models.IntegerField(help_text="Duration of the time slot in seconds")
 
 
 class Reservation(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     worker_skill = models.ForeignKey(WorkerSkill, on_delete=models.CASCADE)
     start_date_time = models.DateTimeField(null=True, blank=True)
-    time_slot_period = models.FloatField(null=True, blank=True, help_text="Duration of the time slot in minutes")
+    time_slot_period = models.IntegerField(null=True, blank=True, help_text="Duration of the time slot in seconds")
 
     status = models.CharField(choices=ReservationStatus.choices(), default=ReservationStatus.IN_PROGRESS, max_length=29)
 

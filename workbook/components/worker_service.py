@@ -102,13 +102,13 @@ class WorkerService:
 
         return workers
 
-    def filter_by(self, workers, filter_by, filter_value_minutes):
-        if not filter_by or not filter_value_minutes:
+    def filter_by(self, workers, filter_by, filter_value_seconds):
+        if not filter_by or not filter_value_seconds:
             return workers
 
         selected_workers = workers.annotate(
             is_selected=ExpressionWrapper(
-                Value(filter_value_minutes) % F('workerskill__time_slot_period'),
+                Value(filter_value_seconds) % F('workerskill__time_slot_period'),
                 output_field=IntegerField()
             )
         ).filter(is_selected=0)
