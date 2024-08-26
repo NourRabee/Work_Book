@@ -23,7 +23,6 @@ class SearchQueryParameters:
         self.search_value = self.search_value.lower()
 
     def validate_params(self):
-
         if self.order_type:
             self.order_type = self.order_type.lower()
         if self.order_by:

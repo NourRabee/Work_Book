@@ -48,7 +48,6 @@ class WorkerService:
         return "Worker deleted successfully."
 
     def search(self, params):
-
         search_result = self.search_by(params.search_by, params.search_value)
         order_result = self.order_by(search_result, params.order_by, params.order_type)
         filter_result = self.filter_by(order_result, params.filter_by, params.filter_value)
@@ -59,7 +58,6 @@ class WorkerService:
         return serializer.data
 
     def search_by(self, search_by, search_value):
-
         if search_by == "first_name":
             # icontains in Django is designed to be case-insensitive but does perform a wildcard-like search.
             workers = Worker.objects.filter(user__first_name__icontains=search_value)
@@ -85,7 +83,6 @@ class WorkerService:
         return workers
 
     def order_by(self, workers, order_by, order_type):
-
         workers = workers.annotate(
             full_name=Concat('user__first_name', Value(' '), 'user__last_name')
         )
@@ -105,22 +102,8 @@ class WorkerService:
 
         return workers
 
-    # EXTRACT(HOUR FROM time_slot_period)
-    class ExtractHour(Func):
-        function = 'EXTRACT'
-        template = '%(function)s(HOUR FROM %(expressions)s)'
-
-    class ExtractMinute(Func):
-        function = 'EXTRACT'
-        template = '%(function)s(MINUTE FROM %(expressions)s)'
-
-    class ExtractSecond(Func):
-        function = 'EXTRACT'
-        template = '%(function)s(SECOND FROM %(expressions)s)'
-
     def filter_by(self, workers, filter_by, filter_value_minutes):
-
-        if filter_by is None or filter_value_minutes is None:
+        if not filter_by or not filter_value_minutes:
             return workers
 
         selected_workers = workers.annotate(
@@ -131,8 +114,3 @@ class WorkerService:
         ).filter(is_selected=0)
 
         return selected_workers
-
-
-
-
-

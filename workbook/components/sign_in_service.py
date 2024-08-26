@@ -9,7 +9,6 @@ class SignInService:
         self.session_service = SessionService()
 
     def authenticate_user(self, email, password):
-
         user = User.objects.get(email=email)
 
         authenticated = self.password_service.validate(password, user.salt, user.password)
@@ -21,7 +20,6 @@ class SignInService:
         return None
 
     def authenticate_session(self, session_id):
-
         session = Session.objects.get(token=session_id)
 
         is_valid_session = self.session_service.is_valid(session.token_start_time)
