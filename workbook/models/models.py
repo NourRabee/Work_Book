@@ -10,9 +10,14 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=300)
     salt = models.CharField(max_length=29)
-    profile_picture = models.ImageField(upload_to='profile_pictures', blank=True, null=True)
+    # profile_picture = models.ImageField(upload_to='profile_pictures', blank=True, null=True)
+    profile_picture = models.TextField(blank=True, null=True)
     biography = models.TextField(null=True, blank=True)
     role = models.CharField(choices=UserType.choices(), default=UserType.CUSTOMER, max_length=29)
+
+
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class Worker(models.Model):
@@ -20,10 +25,6 @@ class Worker(models.Model):
     job_title = models.CharField(max_length=50, null=True, blank=True)
     day_start_time = models.TimeField(null=True, blank=True)
     day_end_time = models.TimeField(null=True, blank=True)
-
-
-class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class Skill(models.Model):
