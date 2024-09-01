@@ -123,3 +123,11 @@ class SearchWorkers(APIView):
         result = self.worker_service.search(params)
 
         return Response(result, status=status.HTTP_200_OK)
+
+
+class CustomerReservations(APIView):
+    pass
+
+
+class WorkerReservations(APIView):
+    pass

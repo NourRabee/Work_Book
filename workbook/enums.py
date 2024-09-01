@@ -2,9 +2,12 @@ from enum import *
 
 
 class ReservationStatus(Enum):
-    IN_PROGRESS = "in progress"
-    REJECTED = "rejected"
-    COMPLETED = "completed"
+    PENDING = "PENDING"
+    CONFIRMED = "CONFIRMED"
+    REJECTED = "REJECTED"
+    IN_PROGRESS = "IN_PROGRESS"
+    COMPLETED = "COMPLETED"
+
 
     @classmethod
     def choices(cls):
@@ -12,8 +15,8 @@ class ReservationStatus(Enum):
 
 
 class MessageSender(Enum):
-    CUSTOMER = "customer"
-    WORKER = "worker"
+    CUSTOMER = "CUSTOMER"
+    WORKER = "WORKER"
 
     @classmethod
     def choices(cls):
@@ -21,8 +24,8 @@ class MessageSender(Enum):
 
 
 class UserType(Enum):
-    CUSTOMER = "customer"
-    WORKER = "worker"
+    CUSTOMER = "CUSTOMER"
+    WORKER = "WORKER"
 
     @classmethod
     def choices(cls):
