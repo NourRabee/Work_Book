@@ -1,7 +1,7 @@
 import json
 
 from django.core.exceptions import BadRequest
-from django.http import FileResponse, HttpResponse
+from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,7 +11,9 @@ from workbook.components.image_service import ImageService
 from workbook.components.sign_in_service import SignInService
 from workbook.components.sign_up_service import SignUpService
 from workbook.components.worker_service import WorkerService
-from workbook.serializers.customer_serializer import CustomerSerializer, CustomerDetailsSerializer
+from workbook.serializers.customer_serializer import CustomerDetailsSerializer
+from workbook.search_query_params import SearchQueryParameters
+from workbook.serializers.customer_serializer import CustomerSerializer
 from workbook.serializers.sign_up_serializer import SignUpSerializer
 from workbook.serializers.worker_serializer import WorkerSerializer, SkillSerializer, WorkerDetailsSerializer
 
@@ -155,3 +157,17 @@ class WorkerSkills(APIView):
         serializer = SkillSerializer(worker_skills, many=True)
 
         return Response(serializer.data)
+
+
+class SearchWorkers(APIView):
+    def __init__(self):
+        self.worker_service = WorkerService()
+
+    def get(self, request):
+        params = SearchQueryParameters(request.query_params)
+        params.validate_mandatory_params()
+        params.validate_params()
+
+        result = self.worker_service.search(params)
+
+        return Response(result, status=status.HTTP_200_OK)
