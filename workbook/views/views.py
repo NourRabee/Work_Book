@@ -240,8 +240,7 @@ class CustomerReservationView(APIView):
 
         result = self.reservation_service.update_by_customer(reservation_id, customer_id, serializer)
         if result:
-            return Response(result,
-                            status=status.HTTP_204_NO_CONTENT)
+            return Response(result, status=status.HTTP_200_OK)
         else:
             raise BadRequest("Failed to update this reservation.")
 
@@ -285,6 +284,6 @@ class WorkerReservationView(APIView):
 
         reservations_response_serializer = WorkerReservationResponseSerializer(result, many=True)
         if result:
-            return Response(reservations_response_serializer.data, status=status.HTTP_204_NO_CONTENT)
+            return Response(reservations_response_serializer.data, status=status.HTTP_200_OK)
         else:
             raise BadRequest("Failed to update this reservation.")
