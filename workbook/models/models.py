@@ -40,8 +40,9 @@ class WorkerSkill(models.Model):
 class Reservation(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     worker_skill = models.ForeignKey(WorkerSkill, on_delete=models.CASCADE)
-    start_date_time = models.DateTimeField(null=True, blank=True)
+    start_date_time = models.IntegerField(null=True, blank=True)
     time_slot_period = models.IntegerField(null=True, blank=True, help_text="Duration of the time slot in seconds")
+    group_id = models.TextField(null=True, blank=True)
 
     status = models.CharField(choices=ReservationStatus.choices(), default=ReservationStatus.IN_PROGRESS, max_length=29)
 

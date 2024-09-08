@@ -16,12 +16,10 @@ urlpatterns = \
 
         path('workers/<int:worker_id>/skills', WorkerSkills.as_view()),
 
-        path('customers/<int:customer_id>/reservations', CustomerReservations.as_view()),  # get customer's reservations --> no body
-        # delete customer's reservation (in progress, completed = no delete, pending
-        # ask about put,
-        # create a new reservation, validation on start_date_time must be in future but between start_time and end_time of worker time
+        path('customers/<int:customer_id>/reservations', CustomerReservationsView.as_view()),
+        path('customers/<int:customer_id>/reservations/<int:reservation_id>', CustomerReservationView.as_view()),
 
-        path('workers/<int:worker_id>/reservations', WorkerReservations.as_view()) #get worker's reservations, #put -> change status of reservations
-
+        path('workers/<int:worker_id>/reservations', WorkerReservationsView.as_view()),
+        path('workers/<int:worker_id>/reservations/<int:reservation_id>', WorkerReservationView.as_view())
 
     ] + debug_toolbar_urls()

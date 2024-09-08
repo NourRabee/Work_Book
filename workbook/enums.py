@@ -5,7 +5,7 @@ class ReservationStatus(Enum):
     PENDING = "PENDING"
     CONFIRMED = "CONFIRMED"
     REJECTED = "REJECTED"
-    IN_PROGRESS = "IN_PROGRESS"
+    IN_PROGRESS = "IN PROGRESS"
     COMPLETED = "COMPLETED"
 
 
