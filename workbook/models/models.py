@@ -16,15 +16,15 @@ class User(models.Model):
     role = models.CharField(choices=UserType.choices(), default=UserType.CUSTOMER, max_length=29)
 
 
-class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-
 class Worker(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     job_title = models.CharField(max_length=50, null=True, blank=True)
-    day_start_time = models.TimeField(null=True, blank=True)
-    day_end_time = models.TimeField(null=True, blank=True)
+    day_start_time = models.IntegerField(help_text="Duration of the time slot in seconds", null=True, blank=True)
+    day_end_time = models.IntegerField(help_text="Duration of the time slot in seconds", null=True, blank=True)
+
+
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
 class Skill(models.Model):
@@ -35,7 +35,7 @@ class Skill(models.Model):
 class WorkerSkill(models.Model):
     worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
-    time_slot_period = models.TimeField()
+    time_slot_period = models.IntegerField(help_text="Duration of the time slot in seconds")
 
     class Meta:
         constraints = [
@@ -46,8 +46,9 @@ class WorkerSkill(models.Model):
 class Reservation(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     worker_skill = models.ForeignKey(WorkerSkill, on_delete=models.CASCADE)
-    start_date_time = models.DateTimeField(null=True, blank=True)
-    time_slot_period = models.TimeField(null=True, blank=True)
+    start_date_time = models.IntegerField(null=True, blank=True)
+    time_slot_period = models.IntegerField(null=True, blank=True, help_text="Duration of the time slot in seconds")
+    group_id = models.TextField(null=True, blank=True)
 
     status = models.CharField(choices=ReservationStatus.choices(), default=ReservationStatus.IN_PROGRESS, max_length=29)
 

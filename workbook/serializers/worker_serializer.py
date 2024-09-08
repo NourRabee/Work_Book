@@ -9,8 +9,8 @@ class WorkerSerializer(serializers.Serializer):
     profile_picture = serializers.CharField()
     biography = serializers.CharField(max_length=300)
     job_title = serializers.CharField(max_length=50)
-    day_start_time = serializers.TimeField()
-    day_end_time = serializers.TimeField()
+    day_start_time = serializers.IntegerField()
+    day_end_time = serializers.IntegerField()
 
     def validate_biography(self, value):
         if len(value.strip()) == 0:
@@ -26,12 +26,25 @@ class WorkerSerializer(serializers.Serializer):
             raise serializers.ValidationError("Job title cannot exceed 50 characters.")
         return value
 
+    def validate_day_start_time(self, value):
+        #  day_start_time must be between 0 (00:00) and 86399 (23:59:59)
+        if value < 0 or value > 86399:
+            raise serializers.ValidationError("Start time must be between 0 and 86399 seconds (00:00 to 23:59:59).")
+        return value
+
+    def validate_day_end_time(self, value):
+        if value < 0 or value > 86399:
+            raise serializers.ValidationError("End time must be between 0 and 86399 seconds (00:00 to 23:59:59).")
+        return value
+
     def validate(self, data):
         day_start_time = data.get('day_start_time')
         day_end_time = data.get('day_end_time')
 
-        if day_start_time and day_end_time and day_end_time <= day_start_time:
-            raise serializers.ValidationError("End time must be after start time.")
+        # Check if day_start_time is before day_end_time
+        if day_start_time is not None and day_end_time is not None:
+            if day_end_time <= day_start_time:
+                raise serializers.ValidationError("End time must be after start time.")
 
         return data
 

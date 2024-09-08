@@ -7,17 +7,19 @@ class BaseEnum(Enum):
         return [(key.value, key.name) for key in cls]
 
 
-class ReservationStatus(BaseEnum):
-    IN_PROGRESS = "IN_PROGRESS"
+class ReservationStatus(Enum):
+    PENDING = "PENDING"
+    CONFIRMED = "CONFIRMED"
     REJECTED = "REJECTED"
+    IN_PROGRESS = "IN PROGRESS"
     COMPLETED = "COMPLETED"
 
 
-class MessageSender(BaseEnum):
+class MessageSender(Enum):
     CUSTOMER = "CUSTOMER"
     WORKER = "WORKER"
 
 
-class UserType(BaseEnum):
+class UserType(Enum):
     CUSTOMER = "CUSTOMER"
     WORKER = "WORKER"
