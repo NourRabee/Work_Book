@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-
 from workbook.models.models import Customer
 from workbook.serializers.customer_serializer import CustomerUserSerializer, CustomerDetailsSerializer
 

@@ -81,3 +81,4 @@ class CustomerDetailsSerializer(serializers.ModelSerializer):
             'biography',
             'reservations'
         ]
+

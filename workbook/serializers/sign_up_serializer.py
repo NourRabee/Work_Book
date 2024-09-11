@@ -47,7 +47,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     def validate_role(self, value):
         if value not in [role.value for role in UserType]:
-            raise serializers.ValidationError("Role must be either customer or worker.")
+            raise serializers.ValidationError("Role must be either CUSTOMER or WORKER.")
         return value
 
     def is_valid_raise(self, raise_exception=True):

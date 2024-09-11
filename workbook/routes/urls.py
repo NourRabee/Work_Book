@@ -16,4 +16,10 @@ urlpatterns = \
 
         path('workers/<int:worker_id>/skills', WorkerSkills.as_view()),
 
+        path('customers/<int:customer_id>/reservations', CustomerReservationsView.as_view()),
+        path('customers/<int:customer_id>/reservations/<int:reservation_id>', CustomerReservationView.as_view()),
+
+        path('workers/<int:worker_id>/reservations', WorkerReservationsView.as_view()),
+        path('workers/<int:worker_id>/reservations/<int:reservation_id>', WorkerReservationView.as_view())
+
     ] + debug_toolbar_urls()
