@@ -6,18 +6,11 @@ from workbook.serializers.common_serializer import UserSerializer, ReviewSeriali
 
 
 class WorkerSerializer(serializers.Serializer):
-    profile_picture = serializers.ImageField()
+    profile_picture = serializers.CharField()
     biography = serializers.CharField(max_length=300)
     job_title = serializers.CharField(max_length=50)
     day_start_time = serializers.IntegerField()
     day_end_time = serializers.IntegerField()
-
-    def validate_profile_picture(self, value):
-        if not value.name.endswith(('jpg', 'jpeg', 'png')):
-            raise serializers.ValidationError("Only JPG, JPEG, and PNG files are allowed.")
-        if value.size > 2 * 1024 * 1024:  # 2MB limit
-            raise serializers.ValidationError("Image size should be under 2MB.")
-        return value
 
     def validate_biography(self, value):
         if len(value.strip()) == 0:
@@ -63,8 +56,61 @@ class WorkerSerializer(serializers.Serializer):
         return True
 
 
+# class WorkerReservationSerializer(serializers.ModelSerializer):
+#     # source='review_set' means Django pulls all the Review objects that are linked to each Reservation.
+#     reviews = ReviewSerializer(many=True, source='review_set')
+#     customer_first_name = serializers.CharField(source='customer.user.first_name', read_only=True)
+#     customer_last_name = serializers.CharField(source='customer.user.last_name', read_only=True)
+#
+#     class Meta:
+#         model = Reservation
+#         fields = ['customer_first_name', 'customer_last_name', 'start_date_time', 'status', 'reviews']
+#
+#
+# class WorkerSkillSerializer(serializers.ModelSerializer):
+#     reservations = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = Skill
+#         fields = ['name', 'description', 'reservations']
+#
+#     def get_reservations(self, obj):
+#         worker = self.context.get('worker')
+#         worker_skill = WorkerSkill.objects.filter(skill=obj, worker=worker).first()
+#         if worker_skill:
+#             reservations = Reservation.objects.filter(worker_skill=worker_skill).select_related('worker_skill')
+#             return WorkerReservationSerializer(reservations, many=True).data
+#         return []
+#
+#
+# class WorkerDetailsSerializer(serializers.ModelSerializer):
+#     first_name = serializers.CharField(source='user.first_name')
+#     last_name = serializers.CharField(source='user.last_name')
+#     email = serializers.EmailField(source='user.email')
+#     profile_picture = serializers.ImageField(source='user.profile_picture')
+#     biography = serializers.CharField(source='user.biography')
+#     skills = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         model = Worker
+#         fields = [
+#             'first_name',
+#             'last_name',
+#             'email',
+#             'profile_picture',
+#             'biography',
+#             'job_title',
+#             'day_start_time',
+#             'day_end_time',
+#             'skills'
+#         ]
+#
+#     def get_skills(self, obj):
+#         skills = Skill.objects.filter(workerskill__worker=obj).distinct()
+#         return WorkerSkillSerializer(skills, many=True, context={'worker': obj}).data
+
+
 class WorkerReservationSerializer(serializers.ModelSerializer):
-    # source='review_set' means Django pulls all the Review objects that are linked to each Reservation.
     reviews = ReviewSerializer(many=True, source='review_set')
     customer_first_name = serializers.CharField(source='customer.user.first_name', read_only=True)
     customer_last_name = serializers.CharField(source='customer.user.last_name', read_only=True)
@@ -81,20 +127,17 @@ class WorkerSkillSerializer(serializers.ModelSerializer):
         model = Skill
         fields = ['name', 'description', 'reservations']
 
-    def get_reservations(self, obj):
-        worker = self.context.get('worker')
-        worker_skill = WorkerSkill.objects.filter(skill=obj, worker=worker).first()
-        if worker_skill:
-            reservations = Reservation.objects.filter(worker_skill=worker_skill).select_related('worker_skill')
-            return WorkerReservationSerializer(reservations, many=True).data
-        return []
+    def get_reservations(self, worker):
+        worker_skill = self.context.get('worker_skill')
+        reservations = worker_skill.prefetched_reservations
+        return WorkerReservationSerializer(reservations, many=True).data
 
 
 class WorkerDetailsSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(source='user.first_name')
     last_name = serializers.CharField(source='user.last_name')
     email = serializers.EmailField(source='user.email')
-    profile_picture = serializers.ImageField(source='user.profile_picture')
+    # profile_picture = serializers.CharField()
     biography = serializers.CharField(source='user.biography')
     skills = serializers.SerializerMethodField()
 
@@ -104,7 +147,7 @@ class WorkerDetailsSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'email',
-            'profile_picture',
+            # 'profile_picture',
             'biography',
             'job_title',
             'day_start_time',
@@ -112,9 +155,13 @@ class WorkerDetailsSerializer(serializers.ModelSerializer):
             'skills'
         ]
 
-    def get_skills(self, obj):
-        skills = Skill.objects.filter(workerskill__worker=obj).distinct()
-        return WorkerSkillSerializer(skills, many=True, context={'worker': obj}).data
+    def get_skills(self, worker):
+        worker_skills = worker.prefetched_skills
+        skills_data = []
+        for worker_skill in worker_skills:
+            skill_serializer = WorkerSkillSerializer(worker_skill.skill, context={'worker_skill': worker_skill})
+            skills_data.append(skill_serializer.data)
+        return skills_data
 
 
 class WorkerUserSerializer(serializers.ModelSerializer):

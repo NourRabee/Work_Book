@@ -10,7 +10,8 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=300)
     salt = models.CharField(max_length=29)
-    profile_picture = models.ImageField(upload_to='profile_pictures', blank=True, null=True)
+    # profile_picture = models.ImageField(upload_to='profile_pictures', blank=True, null=True)
+    profile_picture = models.TextField(blank=True, null=True)
     biography = models.TextField(null=True, blank=True)
     role = models.CharField(choices=UserType.choices(), default=UserType.CUSTOMER, max_length=29)
 
@@ -35,6 +36,11 @@ class WorkerSkill(models.Model):
     worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
     skill = models.ForeignKey(Skill, on_delete=models.CASCADE)
     time_slot_period = models.IntegerField(help_text="Duration of the time slot in seconds")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['worker', 'skill'], name='unique_worker_skill')
+        ]
 
 
 class Reservation(models.Model):

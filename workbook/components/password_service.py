@@ -1,10 +1,11 @@
 import hashlib
 from django.utils.crypto import get_random_string
+from workbook.constants import *
 
 
 class PasswordService:
 
-    def generate_salt(self, length=12):
+    def generate_salt(self, length=SALT_LENGTH):
         return get_random_string(length)
 
     def hash_with_salt(self, plain_password, salt):
@@ -14,8 +15,4 @@ class PasswordService:
         return hashed_password
 
     def validate(self, plain_password, salt, hashed_password):
-        combined = plain_password + salt
-
-        validated = hashlib.sha256(combined.encode('utf-8')).hexdigest()
-
-        return hashed_password == validated
+        return hashed_password == self.hash_with_salt(plain_password, salt)

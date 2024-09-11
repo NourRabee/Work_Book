@@ -1,7 +1,13 @@
 from enum import *
 
 
-class ReservationStatus(Enum):
+class BaseEnum(Enum):
+    @classmethod
+    def choices(cls):
+        return [(key.value, key.name) for key in cls]
+
+
+class ReservationStatus(BaseEnum):
     PENDING = "PENDING"
     CONFIRMED = "CONFIRMED"
     REJECTED = "REJECTED"
@@ -9,24 +15,11 @@ class ReservationStatus(Enum):
     COMPLETED = "COMPLETED"
 
 
-    @classmethod
-    def choices(cls):
-        return [(key.value, key.name) for key in cls]
-
-
-class MessageSender(Enum):
+class MessageSender(BaseEnum):
     CUSTOMER = "CUSTOMER"
     WORKER = "WORKER"
 
-    @classmethod
-    def choices(cls):
-        return [(key.value, key.name) for key in cls]
 
-
-class UserType(Enum):
+class UserType(BaseEnum):
     CUSTOMER = "CUSTOMER"
     WORKER = "WORKER"
-
-    @classmethod
-    def choices(cls):
-        return [(key.value, key.name) for key in cls]
