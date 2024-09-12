@@ -13,7 +13,6 @@ from workbook.components.review_service import ReviewService
 from workbook.components.sign_in_service import SignInService
 from workbook.components.sign_up_service import SignUpService
 from workbook.components.worker_service import WorkerService
-from workbook.serializers.customer_serializer import CustomerDetailsSerializer
 from workbook.search_query_params import SearchQueryParameters
 from workbook.serializers.customer_serializer import *
 from workbook.serializers.reservation_serializer import *
@@ -182,7 +181,7 @@ class SearchWorkers(APIView):
         return Response(result, status=status.HTTP_200_OK)
 
 
-class CustomerReservationsView(APIView):
+class CustomerReservations(APIView):
     def __init__(self):
         self.reservation_service = ReservationService()
 

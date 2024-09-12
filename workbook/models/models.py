@@ -49,7 +49,6 @@ class Reservation(models.Model):
     start_date_time = models.IntegerField()
     time_slot_period = models.IntegerField(help_text="Duration of the time slot in seconds")
     group_id = models.TextField()
-
     status = models.CharField(choices=ReservationStatus.choices(), default=ReservationStatus.PENDING, max_length=29)
 
 

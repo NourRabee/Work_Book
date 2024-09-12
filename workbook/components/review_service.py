@@ -67,7 +67,6 @@ class ReviewService:
         )
 
     def get_worker_reviews(self, worker_id):
-
         reservations = Reservation.objects.filter(worker_skill__worker_id=worker_id)
         reviews = Review.objects.filter(reservation__in=reservations)
 
