@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.core.exceptions import BadRequest
 from rest_framework import serializers
 
+from workbook.helpers import time_helper
 from workbook.models.models import *
 from workbook.serializers.customer_serializer import CustomerSkillSerializer
 
@@ -11,7 +12,7 @@ class CustomerReservationResponseSerializer(serializers.ModelSerializer):
     worker_first_name = serializers.CharField(source='worker_skill.worker.user.first_name', read_only=True)
     worker_last_name = serializers.CharField(source='worker_skill.worker.user.last_name', read_only=True)
     skill = CustomerSkillSerializer(source='worker_skill.skill', read_only=True)
-    start_date_time = serializers.CharField(read_only=True)
+    start_date_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Reservation
@@ -22,6 +23,9 @@ class CustomerReservationResponseSerializer(serializers.ModelSerializer):
             'status',
             'skill'
         ]
+
+    def get_start_date_time(self, obj):
+        return time_helper.unix_to_datetime(obj.start_date_time)
 
 
 class CreateReservationSerializer(serializers.Serializer):
@@ -61,7 +65,7 @@ class WorkerReservationResponseSerializer(serializers.ModelSerializer):
     customer_first_name = serializers.CharField(source='customer.user.first_name', read_only=True)
     customer_last_name = serializers.CharField(source='customer.user.last_name', read_only=True)
     skill = CustomerSkillSerializer(source='worker_skill.skill', read_only=True)
-    start_date_time = serializers.CharField(read_only=True)
+    start_date_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Reservation
@@ -72,6 +76,9 @@ class WorkerReservationResponseSerializer(serializers.ModelSerializer):
             'status',
             'skill'
         ]
+
+    def get_start_date_time(self, obj):
+        return time_helper.unix_to_datetime(obj.start_date_time)
 
 
 class UpdateReservationByWorkerSerializer(serializers.Serializer):
