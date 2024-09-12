@@ -9,14 +9,15 @@ from rest_framework.views import APIView
 from workbook.components.customer_service import CustomerService
 from workbook.components.image_service import ImageService
 from workbook.components.reservation_service import ReservationService
+from workbook.components.review_service import ReviewService
 from workbook.components.sign_in_service import SignInService
 from workbook.components.sign_up_service import SignUpService
-from workbook.components.time_service import TimeService
 from workbook.components.worker_service import WorkerService
 from workbook.serializers.customer_serializer import CustomerDetailsSerializer
 from workbook.search_query_params import SearchQueryParameters
 from workbook.serializers.customer_serializer import *
 from workbook.serializers.reservation_serializer import *
+from workbook.serializers.review_serializer import GetCustomerReviewSerializer, GetWorkerReviewsSerializer
 from workbook.serializers.sign_up_serializer import SignUpSerializer
 from workbook.serializers.worker_serializer import WorkerSerializer, SkillSerializer, WorkerDetailsSerializer
 
