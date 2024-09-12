@@ -25,12 +25,9 @@ class SearchQueryParameters:
     def validate_params(self):
         if self.order_type:
             self.order_type = self.order_type.lower()
+
         if self.order_by:
             self.order_by = self.order_by.lower()
 
-        if self.filter_by:
+        if self.filter_by and self.filter_by == "slot_period" and self.filter_value:
             self.filter_by = self.filter_by.lower()
-
-        else:
-            raise BadRequest('Filtering can only be done on slot_period.')
-

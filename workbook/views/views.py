@@ -1,6 +1,5 @@
 import json
 
-from django.core.exceptions import BadRequest
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.exceptions import NotAuthenticated
@@ -9,11 +8,10 @@ from rest_framework.views import APIView
 from workbook.components.customer_service import CustomerService
 from workbook.components.image_service import ImageService
 from workbook.components.reservation_service import ReservationService
+from workbook.helpers import time_helper
 from workbook.components.sign_in_service import SignInService
 from workbook.components.sign_up_service import SignUpService
-from workbook.components.time_service import TimeService
 from workbook.components.worker_service import WorkerService
-from workbook.serializers.customer_serializer import CustomerDetailsSerializer
 from workbook.search_query_params import SearchQueryParameters
 from workbook.serializers.customer_serializer import *
 from workbook.serializers.reservation_serializer import *
@@ -106,7 +104,6 @@ class CustomerProfilePicture(APIView):
         self.customer_service = CustomerService()
 
     def get(self, request, customer_id):
-
         image_format, image = self.customer_service.get_profile_picture(customer_id)
 
         return HttpResponse(image, content_type=f'image/{image_format}')
@@ -151,7 +148,6 @@ class WorkerProfilePicture(APIView):
         self.worker_service = WorkerService()
 
     def get(self, request, worker_id):
-
         image_format, image = self.worker_service.get_profile_picture(worker_id)
 
         return HttpResponse(image, content_type=f'image/{image_format}')
@@ -186,14 +182,9 @@ class SearchWorkers(APIView):
 class CustomerReservationsView(APIView):
     def __init__(self):
         self.reservation_service = ReservationService()
-        self.time_service = TimeService()
 
     def get(self, request, customer_id):
         reservations = self.reservation_service.get_customer_reservations(customer_id)
-
-        for reservation in reservations:
-            reservation.start_date_time = self.time_service.unix_to_datetime(reservation.start_date_time)
-
         reservations_serializer = CustomerReservationResponseSerializer(reservations, many=True)
 
         return Response(reservations_serializer.data, status=status.HTTP_200_OK)
@@ -213,13 +204,9 @@ class CustomerReservationsView(APIView):
 class CustomerReservationView(APIView):
     def __init__(self):
         self.reservation_service = ReservationService()
-        self.time_service = TimeService()
 
     def get(self, request, reservation_id, customer_id):
         reservation = self.reservation_service.get_customer_reservation(reservation_id, customer_id)
-
-        reservation.start_date_time = self.time_service.unix_to_datetime(reservation.start_date_time)
-
         reservations_serializer = CustomerReservationResponseSerializer(reservation)
 
         return Response(reservations_serializer.data, status=status.HTTP_200_OK)
@@ -248,14 +235,9 @@ class CustomerReservationView(APIView):
 class WorkerReservationsView(APIView):
     def __init__(self):
         self.reservation_service = ReservationService()
-        self.time_service = TimeService()
 
     def get(self, request, worker_id):
         reservations = self.reservation_service.get_worker_reservations(worker_id)
-
-        for reservation in reservations:
-            reservation.start_date_time = self.time_service.unix_to_datetime(reservation.start_date_time)
-
         reservations_serializer = WorkerReservationResponseSerializer(reservations, many=True)
 
         return Response(reservations_serializer.data, status=status.HTTP_200_OK)
@@ -264,13 +246,9 @@ class WorkerReservationsView(APIView):
 class WorkerReservationView(APIView):
     def __init__(self):
         self.reservation_service = ReservationService()
-        self.time_service = TimeService()
 
     def get(self, request, reservation_id, worker_id):
         reservation = self.reservation_service.get_worker_reservation(reservation_id, worker_id)
-
-        reservation.start_date_time = self.time_service.unix_to_datetime(reservation.start_date_time)
-
         reservations_serializer = WorkerReservationResponseSerializer(reservation)
 
         return Response(reservations_serializer.data, status=status.HTTP_200_OK)
