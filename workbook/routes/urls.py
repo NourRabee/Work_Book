@@ -16,10 +16,16 @@ urlpatterns = \
 
         path('workers/<int:worker_id>/skills', WorkerSkills.as_view()),
 
-        path('customers/<int:customer_id>/reservations', CustomerReservationsView.as_view()),
-        path('customers/<int:customer_id>/reservations/<int:reservation_id>', CustomerReservationView.as_view()),
+        path('customers/<int:customer_id>/reservations', CustomerReservations.as_view()),
+        path('customers/<int:customer_id>/reservations/<int:reservation_id>', CustomerReservation.as_view()),
 
-        path('workers/<int:worker_id>/reservations', WorkerReservationsView.as_view()),
-        path('workers/<int:worker_id>/reservations/<int:reservation_id>', WorkerReservationView.as_view())
+        path('workers/<int:worker_id>/reservations', WorkerReservations.as_view()),
+        path('workers/<int:worker_id>/reservations/<int:reservation_id>', WorkerReservation.as_view()),
+
+        path('customers/<int:customer_id>/reservations/<int:reservation_id>/reviews', CustomerReview.as_view()),  #
+        # as; about 's' in reviews
+
+        path('workers/<int:worker_id>/reviews', WorkerReviews.as_view())
+
 
     ] + debug_toolbar_urls()

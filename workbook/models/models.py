@@ -54,7 +54,7 @@ class Reservation(models.Model):
 
 
 class Review(models.Model):
-    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
+    reservation = models.OneToOneField(Reservation, on_delete=models.CASCADE)
     stars = models.IntegerField()
     description = models.TextField()
 

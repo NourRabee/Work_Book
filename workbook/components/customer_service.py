@@ -24,19 +24,14 @@ class CustomerService:
         return CustomerUserSerializer(customer).data
 
     def get(self, customer_id):
-        reviews_prefetch = Prefetch(
-            'review_set',
-            queryset=Review.objects.all(),
-            to_attr='prefetched_reviews'
-        )
 
         reservations_prefetch = Prefetch(
             'reservation_set',
             queryset=Reservation.objects.select_related(
                 'worker_skill__worker__user',
-                'worker_skill__skill'
-            ).prefetch_related(reviews_prefetch),
-            to_attr='prefetched_reservations'
+                'worker_skill__skill',
+                'review'
+            ),to_attr='prefetched_reservations'
         )
 
         customer = Customer.objects.select_related('user').prefetch_related(reservations_prefetch).get(id=customer_id)

@@ -37,17 +37,14 @@ class WorkerService:
         return skills
 
     def get(self, worker_id):
-        reviews_prefetch = Prefetch(
-            'review_set',
-            queryset=Review.objects.all()
-        )
-
         reservations_prefetch = Prefetch(
             'reservation_set',
-            queryset=Reservation.objects.select_related('customer__user').prefetch_related(reviews_prefetch),
+            queryset=Reservation.objects.select_related(
+                'customer__user',
+                'review'
+            ),
             to_attr='prefetched_reservations'
         )
-
         skills_prefetch = Prefetch(
             'workerskill_set',
             queryset=WorkerSkill.objects.select_related('skill').prefetch_related(reservations_prefetch),
