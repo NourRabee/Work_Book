@@ -4,15 +4,12 @@ from django.core.exceptions import BadRequest
 from django.db import transaction
 from django.db.models import ExpressionWrapper, F, BigIntegerField
 
-from workbook.components.time_service import TimeService
+from workbook.helpers import time_helper
 from workbook.enums import ReservationStatus
-from workbook.models.models import Reservation, WorkerSkill, Worker
+from workbook.models.models import Reservation, WorkerSkill
 
 
 class ReservationService:
-    def __init__(self):
-        self.time_service = TimeService()
-
     def get_customer_reservations(self, customer_id):
         reservations = (
             Reservation.objects
@@ -35,20 +32,17 @@ class ReservationService:
 
         validated_data = serializer.validated_data
 
-        worker_skill = WorkerSkill.objects.get(id=validated_data['worker_skill_id'])
+        worker_skill = WorkerSkill.objects.select_related('worker').get(id=validated_data['worker_skill_id'])
+        worker = worker_skill.worker
         time_slot_period = worker_skill.time_slot_period
-        worker_id = worker_skill.worker_id
 
         number_of_slots = int(validated_data['reserved_time_in_seconds'] // time_slot_period)
 
-        start_date_time_unix = start_date_time = (validated_data['start_date_time'])
+        start_date_time_unix = (validated_data['start_date_time']).timestamp()
 
-        if not isinstance(start_date_time, int):
-            start_date_time_unix = start_date_time.timestamp()
-
-        if (self.is_time_reserved(worker_id, start_date_time_unix, validated_data['reserved_time_in_seconds'])
-                or self.is_time_exceeded(worker_id, start_date_time_unix, validated_data['reserved_time_in_seconds'])):
-            return reservation_ids
+        if (self.is_time_reserved(worker.pk, start_date_time_unix, validated_data['reserved_time_in_seconds'])
+                or self.is_time_exceeded(worker, start_date_time_unix, validated_data['reserved_time_in_seconds'])):
+            return False
 
         group_id = uuid.uuid1()
 
@@ -85,18 +79,13 @@ class ReservationService:
 
         return reservations.exists()
 
-    def is_time_exceeded(self, worker_id, start_date_time_unix, reserved_time_in_seconds):
+    def is_time_exceeded(self, worker, start_date_time_unix, reserved_time_in_seconds):
         end_date_time_unix = start_date_time_unix + reserved_time_in_seconds
 
-        worker = Worker.objects.get(id=worker_id)
+        reservation_start_time = time_helper.extract_time_from_unix(start_date_time_unix)
+        reservation_end_time = time_helper.extract_time_from_unix(end_date_time_unix)
 
-        day_start_time = self.time_service.unix_to_time(worker.day_start_time)
-        day_end_time = self.time_service.unix_to_time(worker.day_end_time)
-
-        reservation_start_time = self.time_service.unix_to_time(start_date_time_unix)
-        reservation_end_time = self.time_service.unix_to_time(end_date_time_unix)
-
-        if reservation_start_time <= day_start_time or reservation_end_time > day_end_time:
+        if reservation_start_time < worker.day_start_time or reservation_end_time > worker.day_end_time:
             return True
 
         return False

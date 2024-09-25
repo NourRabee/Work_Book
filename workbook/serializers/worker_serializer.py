@@ -2,7 +2,8 @@ from django.core.exceptions import BadRequest
 from rest_framework import serializers
 
 from workbook.models.models import *
-from workbook.serializers.common_serializer import UserSerializer, ReviewSerializer
+from workbook.serializers.common_serializer import UserSerializer
+from workbook.serializers.review_serializer import ReviewSerializer
 
 
 class WorkerSerializer(serializers.Serializer):
@@ -111,13 +112,13 @@ class WorkerSerializer(serializers.Serializer):
 
 
 class WorkerReservationSerializer(serializers.ModelSerializer):
-    reviews = ReviewSerializer(many=True, source='review_set')
+    review = ReviewSerializer(read_only=True)
     customer_first_name = serializers.CharField(source='customer.user.first_name', read_only=True)
     customer_last_name = serializers.CharField(source='customer.user.last_name', read_only=True)
 
     class Meta:
         model = Reservation
-        fields = ['customer_first_name', 'customer_last_name', 'start_date_time', 'status', 'reviews']
+        fields = ['customer_first_name', 'customer_last_name', 'start_date_time', 'status', 'review']
 
 
 class WorkerSkillSerializer(serializers.ModelSerializer):
