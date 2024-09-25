@@ -1,7 +1,7 @@
 from django.db.models import Prefetch
 
 from workbook.components.image_service import ImageService
-from workbook.models.models import Customer, Reservation, Review
+from workbook.models.models import Customer, Reservation
 from workbook.serializers.customer_serializer import CustomerUserSerializer
 
 

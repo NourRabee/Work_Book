@@ -1,5 +1,4 @@
 from django.core.exceptions import BadRequest
-from datetime import *
 
 
 class SearchQueryParameters:

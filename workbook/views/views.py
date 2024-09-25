@@ -1,6 +1,5 @@
 import json
 
-from django.core.exceptions import BadRequest
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.exceptions import NotAuthenticated
@@ -320,4 +319,3 @@ class WorkerReviews(APIView):
         serializer = GetWorkerReviewsSerializer(result, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
