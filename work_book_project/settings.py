@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'workbook',
+    'debug_toolbar',
+    'rest_framework',
+
 ]
 
 MIDDLEWARE = [
@@ -47,6 +51,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'workbook.middlewares.400_middleware.BadRequestHandler',
+    'workbook.middlewares.401_middleware.NotAuthenticatedHandler',
+    'workbook.middlewares.404_middleware.ObjectDoesNotExistHandler'
+
 ]
 
 ROOT_URLCONF = 'work_book_project.urls'
@@ -131,3 +140,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+INTERNAL_IPS = [
+
+    "127.0.0.1",
+]
