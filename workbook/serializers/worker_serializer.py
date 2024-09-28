@@ -57,60 +57,6 @@ class WorkerSerializer(serializers.Serializer):
         return True
 
 
-# class WorkerReservationSerializer(serializers.ModelSerializer):
-#     # source='review_set' means Django pulls all the Review objects that are linked to each Reservation.
-#     reviews = ReviewSerializer(many=True, source='review_set')
-#     customer_first_name = serializers.CharField(source='customer.user.first_name', read_only=True)
-#     customer_last_name = serializers.CharField(source='customer.user.last_name', read_only=True)
-#
-#     class Meta:
-#         model = Reservation
-#         fields = ['customer_first_name', 'customer_last_name', 'start_date_time', 'status', 'reviews']
-#
-#
-# class WorkerSkillSerializer(serializers.ModelSerializer):
-#     reservations = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         model = Skill
-#         fields = ['name', 'description', 'reservations']
-#
-#     def get_reservations(self, obj):
-#         worker = self.context.get('worker')
-#         worker_skill = WorkerSkill.objects.filter(skill=obj, worker=worker).first()
-#         if worker_skill:
-#             reservations = Reservation.objects.filter(worker_skill=worker_skill).select_related('worker_skill')
-#             return WorkerReservationSerializer(reservations, many=True).data
-#         return []
-#
-#
-# class WorkerDetailsSerializer(serializers.ModelSerializer):
-#     first_name = serializers.CharField(source='user.first_name')
-#     last_name = serializers.CharField(source='user.last_name')
-#     email = serializers.EmailField(source='user.email')
-#     profile_picture = serializers.ImageField(source='user.profile_picture')
-#     biography = serializers.CharField(source='user.biography')
-#     skills = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         model = Worker
-#         fields = [
-#             'first_name',
-#             'last_name',
-#             'email',
-#             'profile_picture',
-#             'biography',
-#             'job_title',
-#             'day_start_time',
-#             'day_end_time',
-#             'skills'
-#         ]
-#
-#     def get_skills(self, obj):
-#         skills = Skill.objects.filter(workerskill__worker=obj).distinct()
-#         return WorkerSkillSerializer(skills, many=True, context={'worker': obj}).data
-
-
 class WorkerReservationSerializer(serializers.ModelSerializer):
     review = ReviewSerializer(read_only=True)
     customer_first_name = serializers.CharField(source='customer.user.first_name', read_only=True)

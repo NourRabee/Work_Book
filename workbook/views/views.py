@@ -9,6 +9,7 @@ from workbook.components.customer_service import CustomerService
 from workbook.components.image_service import ImageService
 from workbook.components.reservation_service import ReservationService
 from workbook.components.review_service import ReviewService
+from workbook.components.search_service import SearchService
 from workbook.components.sign_in_service import SignInService
 from workbook.components.sign_up_service import SignUpService
 from workbook.components.worker_service import WorkerService
@@ -168,14 +169,14 @@ class WorkerSkills(APIView):
 
 class SearchWorkers(APIView):
     def __init__(self):
-        self.worker_service = WorkerService()
+        self.search_service = SearchService()
 
     def get(self, request):
         params = SearchQueryParameters(request.query_params)
         params.validate_mandatory_params()
         params.validate_params()
 
-        result = self.worker_service.search(params)
+        result = self.search_service.search(params)
 
         return Response(result, status=status.HTTP_200_OK)
 
