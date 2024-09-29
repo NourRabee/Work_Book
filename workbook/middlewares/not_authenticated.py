@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from rest_framework import status
 from rest_framework.exceptions import NotAuthenticated
 
 from workbook.middlewares.exception_handler import ExceptionHandler
@@ -9,6 +10,6 @@ class NotAuthenticatedHandler(ExceptionHandler):
 
     def handle(self, request, exception):
         if isinstance(exception, NotAuthenticated):
-            return JsonResponse({'error': str(exception)}, status=400)
+            return JsonResponse({'error': str(exception)}, status=status.HTTP_401_UNAUTHORIZED)
 
         return None
